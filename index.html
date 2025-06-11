@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport d’Investissement – Villa de Luxe, Black River (Île Maurice)</title>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --primary:#00695c;
+  --bg:#f7f9fa;
+  --text:#333333;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.55;
+}
+header {
+  background:var(--primary);
+  color:#fff;
+  padding:1.6rem 1rem;
+  text-align:center;
+}
+h1 { margin:0 0 .4rem 0; font-size:1.7rem; }
+h2 {
+  color:var(--primary);
+  margin:2rem 0 1rem;
+  font-size:1.3rem;
+}
+.container {
+  max-width:900px;
+  margin:auto;
+  padding:1.2rem;
+}
+.card {
+  background:#ffffff;
+  border-radius:8px;
+  box-shadow:0 2px 4px rgba(0,0,0,.08);
+  padding:1rem 1.2rem;
+  margin:1.2rem 0;
+}
+table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:.95rem;
+  margin:1rem 0;
+}
+th,td {
+  border:1px solid #ddd;
+  padding:.55rem;
+  text-align:center;
+}
+th {
+  background:#e0f2f1;
+}
+tr:nth-child(even) { background:#fafbfc; }
+ul { margin-left:1rem; }
+footer {
+  background:#d7eadd;
+  text-align:center;
+  padding:.8rem;
+  font-size:.8rem;
+  color:#555;
+  margin-top:3rem;
+}
+/* Responsive tables for mobile */
+@media (max-width:600px) {
+  table, thead, tbody, th, td, tr {
+    display:block;
+  }
+  thead tr { position:absolute; top:-9999px; left:-9999px; }
+  tr { margin-bottom:.8rem; }
+  td {
+    border:none;
+    border-bottom:1px solid #eee;
+    position:relative;
+    padding-left:50%;
+    text-align:left;
+  }
+  td:before {
+    position:absolute;
+    top:0;
+    left:0;
+    width:48%;
+    padding-left:.6rem;
+    white-space:nowrap;
+    font-weight:600;
+    color:var(--primary);
+  }
+  td:nth-of-type(1):before { content:"Scénario"; }
+  td:nth-of-type(2):before { content:"Occ."; }
+  td:nth-of-type(3):before { content:"ADR"; }
+  td:nth-of-type(4):before { content:"Revenu"; }
+  td:nth-of-type(5):before { content:"Net Auto"; }
+  td:nth-of-type(6):before { content:"Net Agence"; }
+}
+/* Simulator styles */
+label { display:block; margin:.6rem 0 .2rem; font-weight:600; }
+select, input[type=number] {
+  width:100%;
+  padding:.5rem;
+  border:1px solid #ccc;
+  border-radius:4px;
+  font-size:1rem;
+}
+.radio-group { display:flex; gap:1rem; flex-wrap:wrap; margin-top:.4rem; }
+.radio-group label { font-weight:normal; }
+.results {
+  margin-top:1rem;
+  font-size:1.1rem;
+  background:#e0f2f1;
+  padding:.8rem;
+  border-radius:6px;
+}
+.results span { font-weight:700; color:var(--primary); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Rapport d’Investissement</h1>
+  <p>Villa 4 chambres · Black&nbsp;River · Île Maurice</p>
+  <p>Établi le 11 June 2025</p>
+</header>
+
+<div class="container">
+
+  <section class="card">
+    <h2>1 · Synthèse</h2>
+    <p>Ce rapport passe en revue le potentiel locatif d’une villa de quatre chambres située dans une enclave sécurisée de Black River, à l’ouest de l’île Maurice. L’actif est proposé à <strong>1 250 000 €</strong> et bénéficie d’une piscine privée et de services hôteliers (concierge, salle de sport, kids‑club, restaurant). Trois scénarios financiers ont été modélisés (optimiste, base, défavorable) sous deux modes de gestion : autogestion et mandat « clé en main » (20 % du chiffre d’affaires).</p>
+  </section>
+
+  <section class="card">
+    <h2>2 · Tendances d’occupation (2019‑2023)</h2>
+    <p>Le graphique ci‑dessous montre l’occupation moyenne des locations de courte durée sur l’ensemble de l’île Maurice au cours des cinq dernières années, toutes catégories confondues :</p>
+    <canvas id="occChart" style="width:100%;max-height:320px"></canvas>
+  </section>
+
+  <section class="card">
+    <h2>3 · Hypothèses financières</h2>
+    <ul>
+      <li>Séjour moyen : 7 nuits</li>
+      <li>Ménage &amp; blanchisserie : 170 € par séjour</li>
+      <li>Frais fixes (HOA, énergie, assurance, jardin/piscine) : 10 000 € par an</li>
+      <li>Commission plateforme OTA : 3 % du CA</li>
+      <li>Commission gestion déléguée : 20 % du CA</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>4 · Simulateur interactif</h2>
+    <label for="scenarioSel">Taux d’occupation / ADR</label>
+    <select id="scenarioSel">
+      <option value="optimiste">Optimiste – 65 % · 420 €</option>
+      <option value="base" selected>Base – 50 % · 310 €</option>
+      <option value="defavorable">Défavorable – 35 % · 250 €</option>
+    </select>
+
+    <label for="canonInput">Canon annuel (€)</label>
+    <input type="number" id="canonInput" value="15000" min="0" step="1000" inputmode="numeric" pattern="[0-9]*">
+
+    <label>Mode de gestion</label>
+    <div class="radio-group">
+      <label><input type="radio" name="gestion" value="auto" checked> Autogestion</label>
+      <label><input type="radio" name="gestion" value="agence"> Déléguée (20 %)</label>
+    </div>
+
+    <div class="results">
+      Bénéfice net annuel : <span id="netResult">—</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>5 · Scénarios – Résultats détaillés</h2>
+    <table id="scenarioTable">
+      <thead>
+        <tr><th>Scénario</th><th>Occ.</th><th>ADR (€)</th><th>Revenu (€)</th><th>Net Auto (€)</th><th>Net Agence (€)</th></tr>
+      </thead>
+      <tbody>
+        <!-- Rows injected by JS -->
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>6 · Analyse SWOT</h2>
+    <table>
+      <thead><tr><th>Forces</th><th>Faiblesses</th><th>Opportunités</th><th>Menaces</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><ul><li>Emplacement premium face à la mer.</li><li>Accès aux services d’un resort.</li><li>Admissible au permis de résidence.</li></ul></td>
+          <td><ul><li>Coût d’entrée élevé.</li><li>Dépendance saisonnière.</li><li>Hausse potentielle des charges HOA.</li></ul></td>
+          <td><ul><li>Upsell concierge (chef, excursions).</li><li>Marché « workation » inter‑saisons.</li><li>Valorisation ESG.</li></ul></td>
+          <td><ul><li>Aléas aériens &amp; change.</li><li>Renforcement réglementaire.</li><li>Risque cyclonique.</li></ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<footer>© 2025 Miguel Batista · Données indicatives.</footer>
+
+<script>
+// ------------- Occupancy Chart -------------
+const ctx = document.getElementById('occChart').getContext('2d');
+const occData = {
+  labels: ['2019','2020','2021','2022','2023'],
+  datasets:[{
+    label:'Occupation moyenne (%)',
+    data:[68,28,39,54,62],
+    fill:false,
+    tension:.3,
+    borderWidth:3
+  }]
+};
+new Chart(ctx,{
+  type:'line',
+  data:occData,
+  options:{
+    responsive:true,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      y:{ beginAtZero:true, ticks:{ callback:value=>value+' %' } },
+      x:{ grid:{ display:false } }
+    }
+  }
+});
+
+// ------------- Financial Simulator -------------
+const scenarios = {
+  optimiste:{occ:0.65,adr:420},
+  base:{occ:0.50,adr:310},
+  defavorable:{occ:0.35,adr:250}
+};
+const canonInput = document.getElementById('canonInput');
+const scenarioSel = document.getElementById('scenarioSel');
+const netSpan = document.getElementById('netResult');
+const gestionRadios = document.getElementsByName('gestion');
+const tableBody = document.querySelector('#scenarioTable tbody');
+
+function getGestion() {
+  return Array.from(gestionRadios).find(r=>r.checked)?.value||'auto';
+}
+
+function calcOne(occ, adr, canon, managed) {
+  const nights = 365*occ;
+  const revenue = nights*adr;
+  const platform = revenue*0.03;
+  const stays = nights/7;
+  const cleaning = stays*170;
+  const fixed = 10000;
+  const mgmt = managed==='agence'?revenue*0.20:0;
+  return Math.round(revenue - platform - cleaning - fixed - mgmt - canon);
+}
+
+function updateTable(canon) {
+  tableBody.innerHTML='';
+  Object.entries(scenarios).forEach(([key,sc])=>{
+    const revenues = Math.round(365*sc.occ*sc.adr);
+    const netAuto = calcOne(sc.occ, sc.adr, canon, 'auto');
+    const netAgency = calcOne(sc.occ, sc.adr, canon, 'agence');
+    const row = `<tr>
+      <td>${key.charAt(0).toUpperCase()+key.slice(1)}</td>
+      <td>${Math.round(sc.occ*100)} %</td>
+      <td>${sc.adr}</td>
+      <td>${revenues.toLocaleString('fr-FR')}</td>
+      <td>${netAuto.toLocaleString('fr-FR')}</td>
+      <td>${netAgency.toLocaleString('fr-FR')}</td>
+    </tr>`;
+    tableBody.insertAdjacentHTML('beforeend',row);
+  });
+}
+
+function calcInteractive() {
+  const sc = scenarios[scenarioSel.value];
+  const canon = parseFloat(canonInput.value.replace(',','.'))||0;
+  const net = calcOne(sc.occ, sc.adr, canon, getGestion());
+  netSpan.textContent = net.toLocaleString('fr-FR', {style:'currency', currency:'EUR', minimumFractionDigits:0});
+  netSpan.style.color = net >= 0 ? 'green' : 'red';
+}
+
+['change','input'].forEach(evt=>{
+  scenarioSel.addEventListener(evt, calcInteractive);
+  canonInput.addEventListener(evt, calcInteractive);
+});
+gestionRadios.forEach(r=>r.addEventListener('change', calcInteractive));
+
+// Initial render
+updateTable(parseFloat(canonInput.value));
+calcInteractive();
+canonInput.addEventListener('input', ()=>updateTable(parseFloat(canonInput.value)));
+</script>
+</body>
+</html>
